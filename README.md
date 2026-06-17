@@ -1,11 +1,6 @@
 # TicHealthSync
 
-<!--
-  Codemagic build badge. After you add this repo to Codemagic, replace APP_ID and
-  WORKFLOW_ID below with the ids from your Codemagic app URL
-  (https://codemagic.io/app/APP_ID/WORKFLOW_ID/...). Until then it shows "unknown".
--->
-[![Codemagic build status](https://api.codemagic.io/apps/APP_ID/ios-compile/status_badge.svg)](https://codemagic.io/apps)
+[![Codemagic build status](https://api.codemagic.io/apps/6a3219d07f177169062d5849/ios-compile/status_badge.svg)](https://codemagic.io/app/6a3219d07f177169062d5849)
 
 Personal-use local health sync proof of concept.
 
