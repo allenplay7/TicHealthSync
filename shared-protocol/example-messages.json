@@ -1,0 +1,44 @@
+{
+  "statusRead": {
+    "status": "ready",
+    "deviceId": "ticwatch-pro-5-main",
+    "recordsPending": 3,
+    "protocolVersion": 1,
+    "advertising": true,
+    "gattServer": "running"
+  },
+  "helloAck": {
+    "type": "HELLO_ACK",
+    "message": "TicHealthSync ready"
+  },
+  "recordBatch": {
+    "type": "RECORD_BATCH",
+    "batchId": "batch-001",
+    "records": [
+      {
+        "recordId": "00000000-0000-4000-8000-000000000001",
+        "deviceId": "ticwatch-pro-5-main",
+        "type": "heart_rate",
+        "value": 82,
+        "unit": "bpm",
+        "startTime": "2026-06-16T15:30:00+10:00",
+        "endTime": "2026-06-16T15:30:05+10:00",
+        "createdAt": "2026-06-16T15:30:06+10:00",
+        "sequence": 1,
+        "syncStatus": "sent_unconfirmed"
+      }
+    ]
+  },
+  "ackWrite": {
+    "type": "ACK_BATCH",
+    "batchId": "batch-001"
+  },
+  "chunk": {
+    "type": "CHUNK",
+    "batchId": "chunk-001",
+    "chunkIndex": 0,
+    "chunkCount": 3,
+    "payload": "{\"type\":\"RECORD_BATCH\""
+  }
+}
+

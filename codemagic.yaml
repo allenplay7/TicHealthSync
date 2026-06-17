@@ -1,0 +1,73 @@
+# Codemagic CI config for the TicHealthSync iOS app.
+# Docs: https://docs.codemagic.io/yaml/yaml-getting-started/
+#
+# The default workflow ("ios-compile") just verifies the app compiles — it builds
+# the iOS app unsigned, so it needs NO Apple Developer account or signing setup.
+# Once compilation is green, use the "ios-device" notes at the bottom to produce a
+# signed, installable .ipa.
+
+workflows:
+  ios-compile:
+    name: TicHealthSync iOS (compile check, unsigned)
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      xcode: latest
+      vars:
+        XCODE_PROJECT: "ios-app/TicHealthSync.xcodeproj"
+        XCODE_SCHEME: "TicHealthSync"
+    triggering:
+      events:
+        - push
+      cancel_previous_builds: true
+    scripts:
+      - name: Show toolchain
+        script: |
+          xcodebuild -version
+          xcodebuild -list -project "$XCODE_PROJECT"
+      - name: Build (unsigned, iOS device SDK)
+        script: |
+          xcodebuild \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Debug \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            clean build
+    artifacts:
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/Products/**/*.app
+
+# ---------------------------------------------------------------------------
+# Producing an installable build (later, once compilation passes):
+#
+# Running the app on your iPhone requires code signing. The easiest path is
+# Codemagic automatic signing:
+#   1. In the Codemagic UI: Teams/App settings -> Code signing identities, add
+#      your Apple Developer account (App Store Connect API key).
+#   2. Replace the build step above with `xcode-project build-ipa`, e.g.:
+#
+#   environment:
+#     ios_signing:
+#       distribution_type: development        # or app_store / ad_hoc
+#       bundle_identifier: com.tichealthsync.ios
+#     groups:
+#       - app_store_connect                   # holds your API key vars
+#   scripts:
+#     - name: Set up signing
+#       script: xcode-project use-profiles
+#     - name: Build IPA
+#       script: |
+#         xcode-project build-ipa \
+#           --project "$XCODE_PROJECT" \
+#           --scheme "$XCODE_SCHEME"
+#   artifacts:
+#     - build/ios/ipa/*.ipa
+#
+# Note: bundle id com.tichealthsync.ios must exist in your Apple Developer account
+# (or let Codemagic register it). CoreBluetooth only works on a real device, not
+# the Simulator.
+# ---------------------------------------------------------------------------

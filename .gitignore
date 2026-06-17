@@ -1,0 +1,30 @@
+.gradle/
+build/
+*/build/
+
+local.properties
+
+*.iml
+.idea/
+
+*.apk
+*.aab
+
+captures/
+.externalNativeBuild/
+.cxx/
+
+# ---- Xcode / iOS ----
+# Keep the .xcodeproj and shared schemes; ignore user/build artifacts.
+xcuserdata/
+*.xcuserstate
+DerivedData/
+*.ipa
+*.dSYM
+*.dSYM.zip
+Pods/
+
+# ---- OS / misc ----
+.DS_Store
+Thumbs.db
+*.log

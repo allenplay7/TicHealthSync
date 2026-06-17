@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TicHealthSync HealthRecord",
+  "type": "object",
+  "required": [
+    "recordId",
+    "deviceId",
+    "type",
+    "value",
+    "unit",
+    "startTime",
+    "endTime",
+    "createdAt",
+    "sequence",
+    "syncStatus"
+  ],
+  "properties": {
+    "recordId": {
+      "type": "string",
+      "description": "Unique UUID generated on the watch."
+    },
+    "deviceId": {
+      "type": "string",
+      "const": "ticwatch-pro-5-main"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "heart_rate",
+        "step_count",
+        "active_energy",
+        "distance",
+        "workout_start",
+        "workout_end"
+      ]
+    },
+    "value": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "startTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "endTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "syncStatus": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "sent_unconfirmed",
+        "synced",
+        "failed"
+      ]
+    },
+    "batchId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}
+
