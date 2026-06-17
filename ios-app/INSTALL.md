@@ -1,25 +1,54 @@
 # Installing TicHealthSync on your iPhone (first-time guide)
 
-You're building on Windows with no Mac, so the path is:
+Two ways to get the app on your phone:
 
-**GitHub → Codemagic (builds + signs in the cloud) → TestFlight → your iPhone.**
+- **Path A — your Mac + free Apple ID (recommended, $0).** Install directly from Xcode
+  over a USB cable. No paid account. Apps expire after 7 days; just re-run from Xcode to
+  refresh. **Use this.**
+- **Path B — Codemagic + TestFlight ($99/yr).** Cloud build + install with no Mac, but
+  requires the paid Apple Developer Program. Documented below as a later option.
 
-There are two milestones in `codemagic.yaml`:
-
-- **`ios-compile`** — verifies the app compiles. Needs **no Apple account**. Do this first.
-- **`ios-testflight`** — signs the app and sends it to TestFlight so you can install it.
-  Needs a **paid Apple Developer Program** membership.
+Either way, **Codemagic is still useful right now** as the automatic compile-check CI:
+the `ios-compile` workflow builds the app (unsigned) on every push, so you catch Swift
+errors without a Mac. That part needs no Apple account and is already green.
 
 ---
 
-## The one unavoidable cost
+## Path A — install via your Mac with a free Apple ID (recommended)
 
-To install your own app on a physical iPhone without a Mac, you need the **Apple
-Developer Program: 99 USD/year**. A free Apple ID will not work here (free signing only
-works from Xcode on a Mac, and those apps expire after 7 days). Enroll at
-<https://developer.apple.com/programs/> (enrollment can take a few hours to a day).
+Do this when your Mac is ready. Needs only your normal (free) Apple ID.
 
-Everything below assumes you've enrolled.
+1. **Get the code on the Mac.** In Terminal:
+   `git clone https://github.com/allenplay7/TicHealthSync.git`
+2. **Open the project.** Launch Xcode → Open → `TicHealthSync/ios-app/TicHealthSync.xcodeproj`.
+3. **Add your Apple ID to Xcode.** Xcode → Settings → Accounts → **+** → Apple ID → sign
+   in. (This creates a free "Personal Team".)
+4. **Set signing.** Click the **TicHealthSync** project → **TicHealthSync** target →
+   **Signing & Capabilities** tab → tick **Automatically manage signing** → **Team** =
+   your name (Personal Team).
+   - If you see a red error that the bundle id is unavailable, change **Bundle
+     Identifier** to something unique, e.g. `com.allen.tichealthsync`.
+5. **Prep the iPhone (one time):**
+   - Plug the iPhone into the Mac with a cable; on the phone tap **Trust This Computer**.
+   - iOS 16+: enable **Settings → Privacy & Security → Developer Mode → On**, then restart
+     the phone.
+6. **Pick your phone as the run target** in Xcode's top toolbar (next to the scheme),
+   then press **Run** (the ▶ button, or ⌘R). Xcode builds and installs it.
+7. **Trust the developer cert (first run only).** The app installs but iOS blocks the
+   first launch. On the phone: **Settings → General → VPN & Device Management** → tap your
+   Apple ID under "Developer App" → **Trust**. Then tap the app icon to open it.
+8. **Allow Bluetooth** when prompted, and you're running.
+
+That's it — no payment, no TestFlight. Re-run from Xcode whenever the 7-day signing
+lapses or you change code.
+
+---
+
+## Path B — Codemagic + TestFlight (only if you ever want no-Mac installs)
+
+This needs the **paid Apple Developer Program (99 USD/yr)** — skip it unless you decide
+you want cloud installs without plugging into the Mac. Enroll at
+<https://developer.apple.com/programs/> first, then:
 
 ---
 
