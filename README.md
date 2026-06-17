@@ -1,8 +1,17 @@
 # TicHealthSync
 
+<!--
+  Codemagic build badge. After you add this repo to Codemagic, replace APP_ID and
+  WORKFLOW_ID below with the ids from your Codemagic app URL
+  (https://codemagic.io/app/APP_ID/WORKFLOW_ID/...). Until then it shows "unknown".
+-->
+[![Codemagic build status](https://api.codemagic.io/apps/APP_ID/ios-compile/status_badge.svg)](https://codemagic.io/apps)
+
 Personal-use local health sync proof of concept.
 
-Current milestone: Phase 1 Wear OS BLE proof of concept for nRF Connect testing.
+Current milestone: Phase 3 — iOS BLE client skeleton. Phase 1 (Wear OS BLE PoC) and
+Phase 2 (Room persistence) are complete and verified on hardware. iOS install via
+Codemagic + TestFlight: see [ios-app/INSTALL.md](ios-app/INSTALL.md).
 
 ```text
 TicWatch Pro 5 Wear OS app

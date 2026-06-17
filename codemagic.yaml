@@ -41,33 +41,55 @@ workflows:
       - /tmp/xcodebuild_logs/*.log
       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/Products/**/*.app
 
-# ---------------------------------------------------------------------------
-# Producing an installable build (later, once compilation passes):
-#
-# Running the app on your iPhone requires code signing. The easiest path is
-# Codemagic automatic signing:
-#   1. In the Codemagic UI: Teams/App settings -> Code signing identities, add
-#      your Apple Developer account (App Store Connect API key).
-#   2. Replace the build step above with `xcode-project build-ipa`, e.g.:
-#
-#   environment:
-#     ios_signing:
-#       distribution_type: development        # or app_store / ad_hoc
-#       bundle_identifier: com.tichealthsync.ios
-#     groups:
-#       - app_store_connect                   # holds your API key vars
-#   scripts:
-#     - name: Set up signing
-#       script: xcode-project use-profiles
-#     - name: Build IPA
-#       script: |
-#         xcode-project build-ipa \
-#           --project "$XCODE_PROJECT" \
-#           --scheme "$XCODE_SCHEME"
-#   artifacts:
-#     - build/ios/ipa/*.ipa
-#
-# Note: bundle id com.tichealthsync.ios must exist in your Apple Developer account
-# (or let Codemagic register it). CoreBluetooth only works on a real device, not
-# the Simulator.
-# ---------------------------------------------------------------------------
+  # Signed build that uploads to TestFlight so you can install on your iPhone.
+  # REQUIRES a paid Apple Developer Program membership ($99/yr) and a one-time
+  # setup in Codemagic. See ios-app/INSTALL.md for the full first-time walkthrough.
+  #
+  # Before this workflow can run you must:
+  #   1. Add an App Store Connect API key in Codemagic
+  #      (Team settings -> Integrations -> App Store Connect) and name it.
+  #   2. Put that exact name after `app_store_connect:` below
+  #      (replace "TicHealthSync ASC API key").
+  #   3. Create the app record in App Store Connect with bundle id
+  #      com.tichealthsync.ios (App Store Connect -> Apps -> +).
+  ios-testflight:
+    name: TicHealthSync iOS (signed -> TestFlight)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: TicHealthSync ASC API key
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.tichealthsync.ios
+      xcode: latest
+      vars:
+        XCODE_PROJECT: "ios-app/TicHealthSync.xcodeproj"
+        XCODE_SCHEME: "TicHealthSync"
+    triggering:
+      events:
+        - tag            # build + upload when you push a git tag (e.g. v0.1.0)
+      cancel_previous_builds: true
+    scripts:
+      - name: Set build number from Codemagic counter
+        script: |
+          cd "$CM_BUILD_DIR/ios-app"
+          # Avoid TestFlight "duplicate build number" rejections by stamping the
+          # Codemagic build counter into the project version.
+          sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $BUILD_NUMBER;/g" \
+            TicHealthSync.xcodeproj/project.pbxproj
+      - name: Fetch signing files
+        script: xcode-project use-profiles
+      - name: Build signed IPA
+        script: |
+          xcode-project build-ipa \
+            --project "$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+
